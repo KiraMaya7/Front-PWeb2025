@@ -1,0 +1,1 @@
+// En esta pantalla podra ver el promedio de las calificaciones hacia los doctores 
