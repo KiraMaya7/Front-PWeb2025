@@ -29,13 +29,16 @@ export default function App() {
                 <Link className="nav-link hover-effect" to="/AreasMedicas">Servicios</Link>
               </li>
               <li className="nav-item mx-2">
-                <Link className="nav-link hover-effect" to="/DoctorList">Doctores</Link>
+                <Link className="nav-link hover-effect" to="/Doctores">Doctores</Link>
               </li>
               <li className="nav-item mx-2">
                 <Link className="nav-link hover-effect" to="/contacto">Contacto</Link>
               </li>
               <li className="nav-item mx-2">
                 <Link className="nav-link hover-effect" to="/profile">Perfil</Link>
+              </li>
+              <li className="nav-item mx-2">
+                <Link className="nav-link hover-effect" to="/Registro">Registro</Link>
               </li>
             </ul>
           </div>
