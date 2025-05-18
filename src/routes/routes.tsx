@@ -6,6 +6,7 @@ import AreasMedicas from '../pages-Usuarios/AreasMedicas';
 import Doctores from '../pages-Usuarios/Doctores';
 import Contact from '../pages-Usuarios/Contacto';
 import Profile from '../pages-Usuarios/Profile';
+import DoctorList from '../pages-Doctores/DoctorList';
 
 export default function AppRouter() {
   return (
@@ -13,6 +14,7 @@ export default function AppRouter() {
       <Route path="/" element={<Home />} />
       <Route path="/AreasMedicas" element={<AreasMedicas />} />
       <Route path="/Doctores" element={<Doctores />} />
+      <Route path="/DoctorList" element={<DoctorList />} />
       <Route path="/contacto" element={<Contact />} />
       <Route path="/profile" element={<Profile />} />
     </Routes>
