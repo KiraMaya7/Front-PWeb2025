@@ -62,7 +62,7 @@ const handleSubmit = async (e: React.FormEvent) => {
           <div className="card shadow-2-strong" style={{ borderRadius: '1rem' }}>
             <div className="card-body p-5 text-center">
               
-              <h1 className="mb-4">Acceso de Pacientes</h1>
+              <h1 className="mb-4">Acceso de Usuarios</h1>
 
               <div className="mb-4">
               <img src={logo} className="img-fluid" style={{ width: '250px', height: '150px' }} />
@@ -123,9 +123,8 @@ const handleSubmit = async (e: React.FormEvent) => {
                 </button>
 
                 <p className="mt-4 text-muted">
-                  Sistema de Citas Médicas 
                   <br/>
-                  <small>Portal de Pacientes</small>
+                  <small>Health Care S.A C.V</small>
                 </p>
               </form>
             </div>
