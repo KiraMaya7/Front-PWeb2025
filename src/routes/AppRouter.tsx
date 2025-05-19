@@ -10,6 +10,8 @@ import LoginUsuario from '../pages-Usuarios/Profile';
 // Páginas privadas
 import PrivateRoute from './PrivateRoute';
 import AltaMedico from '../pages-Admin/altaMedico';
+import ReportesCitas from '../pages-Admin/reportesCitas';
+import CalificacionesDoctores from '../pages-Admin/calificacionDoctores';
 
 
 export default function AppRouter() {
@@ -40,6 +42,16 @@ export default function AppRouter() {
         <Route path="/Administrador/altaMedico" element={
         <PrivateRoute allowedRoles={[1]}>
           <AltaMedico />
+          </PrivateRoute>
+        } />
+          <Route path="/Administrador/reportesCitas" element={
+        <PrivateRoute allowedRoles={[1]}>
+          <ReportesCitas />
+          </PrivateRoute>
+        } />
+        <Route path="/Administrador/calificacionDoctores" element={
+        <PrivateRoute allowedRoles={[1]}>
+          <CalificacionesDoctores />
           </PrivateRoute>
         } />
 
