@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
 import { Modal, Button, Form, Spinner } from 'react-bootstrap';
-
+import api from '../services/api';
 interface Doctor {
   idDoctor: number;
   nombre: string;
-  numeroLicencia: string;
+  licenciaMedica: string;
   especialidad: string;
   imagen?: string;
   descripcion?: string;
@@ -48,11 +47,7 @@ const Doctores = () => {
   useEffect(() => {
     const fetchDoctores = async () => {
       try {
-        const response = await axios.get('http://localhost:5140/api/Doctores', {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem('token')}`
-          }
-        });
+        const response = await api.get('/Doctores');
         setDoctores(response.data);
       } catch (err) {
         setError('Error al cargar los doctores');
@@ -75,7 +70,7 @@ const Doctores = () => {
   const handleSubmitCita = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const response = await axios.post('http://localhost:5140/api/citas', {
+      const response = await api.post('/citas', {
         ...formData,
         fechaHora: new Date(formData.fechaHora).toISOString()
       }, {
@@ -119,7 +114,7 @@ const Doctores = () => {
               <div className="card-body">
                 <h5 className="card-title text-primary">{doctor.nombre}</h5>
                 <h6 className="text-muted">{doctor.especialidad}</h6>
-                <p className="text-secondary small mb-0">Licencia: {doctor.numeroLicencia}</p>
+                <p className="text-secondary small mb-0">Licencia: {doctor.licenciaMedica}</p>
                 {doctor.descripcion && (
                   <p className="card-text mt-2">{doctor.descripcion}</p>
                 )}

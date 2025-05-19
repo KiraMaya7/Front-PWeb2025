@@ -2,14 +2,12 @@ import { Navigate } from 'react-router-dom';
 import { getUserRole, isAuthenticated } from '../auth/authHelpers';
 import React from 'react';
 
-
 interface PrivateRouteProps {
   children: React.ReactNode;
   allowedRoles: number[];
 }
 
-
-const PrivateRoute = ({ children, allowedRoles }: PrivateRouteProps) => {
+const PrivateRoute: React.FC<PrivateRouteProps> = ({ children, allowedRoles }) => {
   const authenticated = isAuthenticated();
   const userRole = getUserRole();
 
@@ -21,7 +19,7 @@ const PrivateRoute = ({ children, allowedRoles }: PrivateRouteProps) => {
     return <Navigate to="/" replace />;
   }
 
-  return children;
+  return <>{children}</>;
 };
 
 export default PrivateRoute;
