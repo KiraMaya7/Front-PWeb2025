@@ -32,7 +32,7 @@ const AdminInicio: React.FC = () => {
               <p className="card-text">Consulta el historial de citas completadas</p>
               <button 
                 className="btn btn-success mt-3"
-                onClick={() => navigate('/Administrador/CitasRealizadas')}
+                onClick={() => navigate('/Administrador/reportesCitas')}
               >
                 Ver Historial
               </button>
@@ -48,9 +48,25 @@ const AdminInicio: React.FC = () => {
               <p className="card-text">Revisa las calificaciones de los médicos</p>
               <button 
                 className="btn btn-warning mt-3"
-                onClick={() => navigate('/Administrador/Calificaciones')}
+                onClick={() => navigate('/Administrador/calificacionDoctores')}
               >
                 Ver Calificaciones
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div className="col-md-4 mb-4">
+          <div className="card h-100 shadow-sm">
+            <div className="card-body text-center">
+              <i className="bi bi-calendar-check fs-1 text-success mb-3"></i>
+              <h5 className="card-title">Todas las Cuentas</h5>
+              <p className="card-text">Elimina o edita las cuentas</p>
+              <button 
+                className="btn btn-secondary mt-3"
+                onClick={() => navigate('/Administrador/gestionCuentas')}
+              >
+                Ver Cuentas
               </button>
             </div>
           </div>
