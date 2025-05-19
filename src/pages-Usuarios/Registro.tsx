@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import api from '../services/api';
 
 const Registro = () => {
   const [form, setForm] = useState({
@@ -34,7 +35,7 @@ const Registro = () => {
     return;
   }
     try {
-      await axios.post('http://localhost:5140/api/Cuenta', form);
+      await api.post('/Cuenta', form);
       alert('Registro exitoso');
       navigate('/login');
     } catch (error) {
