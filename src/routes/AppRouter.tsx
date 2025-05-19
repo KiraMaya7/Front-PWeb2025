@@ -10,6 +10,9 @@ import LoginUsuario from '../pages-Usuarios/Profile';
 // Páginas privadas
 import PrivateRoute from './PrivateRoute';
 import AltaMedico from '../pages-Admin/altaMedico';
+
+import PacienteDashboard from '../pages-Usuarios/PacienteDashboard';
+import InicioPaciente from '../pages-Usuarios/PacienteCitas'
 import ReportesCitas from '../pages-Admin/reportesCitas';
 import CalificacionesDoctores from '../pages-Admin/calificacionDoctores';
 import GestionUsuarios from '../pages-Admin/gestionCuentas';
@@ -58,6 +61,18 @@ export default function AppRouter() {
         <Route path="/Administrador/gestionCuentas" element={
         <PrivateRoute allowedRoles={[1]}>
           <GestionUsuarios />
+          </PrivateRoute>
+        } />
+
+      {/* Ruta  para administradores (rol 3) */}
+      <Route path="/Paciente" element={
+        <PrivateRoute allowedRoles={[3]}>
+          < PacienteDashboard/>
+        </PrivateRoute>
+      } />
+        <Route path="/Paciente/InicioPaciente" element={
+        <PrivateRoute allowedRoles={[3]}>
+          <InicioPaciente />
           </PrivateRoute>
         } />
 
