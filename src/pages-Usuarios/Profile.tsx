@@ -28,6 +28,7 @@ const LoginUsuario: React.FC = () => {
       });
 
       const data = response.data;
+      console.log('Respuesta del backend:', response.data);
 
       localStorage.setItem('token', data.token);
       localStorage.setItem('rol', data.rol.toString());
@@ -48,6 +49,8 @@ const LoginUsuario: React.FC = () => {
     } catch (error) {
       console.error('Error al iniciar sesión:', error);
       alert('Usuario o contraseña incorrectos');
+      alert("Deberías haber sido redirigido");
+
     }
   };
 

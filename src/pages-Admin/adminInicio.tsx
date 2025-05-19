@@ -1,10 +1,15 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-
+import Navbar from './NavbarAdmin'; 
 const AdminInicio: React.FC = () => {
   const navigate = useNavigate();
 
   return (
+    <>
+      <Navbar />
+      <div className="container py-5">
+        
+      </div>
     <div className="container py-5">
       <h1 className="text-center mb-5">Panel de Administración</h1>
       
@@ -58,6 +63,7 @@ const AdminInicio: React.FC = () => {
         </div>
       </div>
     </div>
+    </>
   );
 };
 

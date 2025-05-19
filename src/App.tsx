@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import AppRouter from '../src/routes/routes';
+import AppRouter from './routes/AppRouter';
 // @ts-ignore
 import '../src/routes/navbar.css';
 
