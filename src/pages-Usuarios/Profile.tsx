@@ -45,6 +45,9 @@ const handleSubmit = async (e: React.FormEvent) => {
       case 2:
         navigate('/Doctor');
         break;
+      case 3:
+        navigate('/Paciente');
+        break;
       default:
         navigate('/Home');
         break;
