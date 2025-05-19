@@ -17,11 +17,12 @@ const Login = () => {
 
     try {
       const response = await axios.post('http://localhost:5140/api/Login', {
-        usuario: email, 
-        contraseña: password,
+        username: email, 
+        password: password,
       });
 
       const data = response.data;
+      console.log('Respuesta del backend:', response.data);
 
       // Guarda token y rol
       localStorage.setItem('token', data.token);
@@ -43,6 +44,8 @@ const Login = () => {
     } catch (error) {
       console.error('Error al iniciar sesión:', error);
       alert('Usuario o contraseña incorrectos');
+      alert("Deberías haber sido redirigido");
+
     }
   };
 
