@@ -12,7 +12,7 @@ const Home = () => {
       {/* Sección Hero */}
       <header className="hero-section py-3" style={{ backgroundColor: '#cceeff' }}>
         <div className="container text-center">
-          <h1 className="text-center mb-3">Hospital San Cristo</h1>
+          <h1 className="text-center mb-3">Hospital Health Care</h1>
           <p className="text-center mb-3">Cuidando tu salud con excelencia desde 1995</p>
         </div>
       </header>
@@ -82,7 +82,7 @@ const Home = () => {
           <div className="col-md-6">
             <h2 className="mb-4">Bienvenido a Nuestro Centro Médico</h2>
             <p className="lead">
-              En Hospital San Cristo nos preocupamos por tu bienestar. Ofrecemos atención médica 
+              En Hospital Health Care nos preocupamos por tu bienestar. Ofrecemos atención médica 
               especializada con tecnología de última generación y un equipo humano altamente 
               calificado.
             </p>
@@ -114,7 +114,7 @@ const Home = () => {
         <div className="container text-center">
           <p>Contacto: (555) 123-4567 | contacto@hospitalsanjose.com</p>
           <p>Av. Principal 123, Ciudad</p>
-          <p>&copy; 2025 Hospital San Cristo</p>
+          <p>&copy; 2025 Hospital Health Care</p>
         </div>
       </footer>
     </div>
