@@ -18,41 +18,42 @@ const LoginUsuario: React.FC = () => {
     navigate('/Registro');
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault();
 
-    try {
-      const response = await api.post<LoginResponse>('/Login', {
-        username: usuario,
-        password: password
-      });
+  try {
+    const response = await api.post<LoginResponse>('/Login', {
+      username: usuario,
+      password: password
+    });
 
-      const data = response.data;
-      console.log('Respuesta del backend:', response.data);
+    const data = response.data;
+    console.log('Respuesta del backend:', response.data);
 
-      localStorage.setItem('token', data.token);
-      localStorage.setItem('rol', data.rol.toString());
-      localStorage.setItem('nombre', data.nombre);
-      localStorage.setItem('idUsuario', data.idUsuario.toString());
+    localStorage.setItem('token', data.token);
+    localStorage.setItem('rol', data.rol.toString());
+    localStorage.setItem('nombre', data.nombre);
+    localStorage.setItem('idUsuario', data.idUsuario.toString());
 
-      switch (data.rol) {
-        case 1:
-          navigate('/Administrador');
-          break;
-        case 2:
-          navigate('/Doctor');
-          break;
-        default:
-          navigate('/Home');
-          break;
-      }
-    } catch (error) {
-      console.error('Error al iniciar sesión:', error);
-      alert('Usuario o contraseña incorrectos');
-      alert("Deberías haber sido redirigido");
+    // Trigger navbar update
+    window.dispatchEvent(new Event('storage'));
 
+    switch (data.rol) {
+      case 1:
+        navigate('/Administrador');
+        break;
+      case 2:
+        navigate('/Doctor');
+        break;
+      default:
+        navigate('/Home');
+        break;
     }
-  };
+  } catch (error) {
+    console.error('Error al iniciar sesión:', error);
+    alert('Usuario o contraseña incorrectos');
+  }
+};
 
   return (
     <div className="container-fluid vh-100 gradient-custom">

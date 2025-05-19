@@ -9,6 +9,7 @@ import AdminInicio from '../pages-Admin/adminInicio';
 import LoginUsuario from '../pages-Usuarios/Profile';
 // Páginas privadas
 import PrivateRoute from './PrivateRoute';
+import AltaMedico from '../pages-Admin/altaMedico';
 
 
 export default function AppRouter() {
@@ -36,6 +37,12 @@ export default function AppRouter() {
           <AdminInicio />
         </PrivateRoute>
       } />
+        <Route path="/Administrador/altaMedico" element={
+        <PrivateRoute allowedRoles={[1]}>
+          <AltaMedico />
+          </PrivateRoute>
+        } />
+
     </Routes>
   );
 }
