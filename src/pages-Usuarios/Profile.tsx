@@ -1,11 +1,17 @@
 import React, { useState } from 'react';
-import axios from 'axios';
+import api from '../services/api';
 import { useNavigate } from 'react-router-dom';
-import Registro from './Registro';
+import logo from '../img/logo.jpg';
+interface LoginResponse {
+  token: string;
+  rol: number;
+  nombre: string;
+  idUsuario: number;
+}
 
-const Login = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+const LoginUsuario: React.FC = () => {
+  const [usuario, setUsuario] = useState<string>('');
+  const [password, setPassword] = useState<string>('');
   const navigate = useNavigate();
 
   const handleGoToRegister = () => {
@@ -16,28 +22,27 @@ const Login = () => {
     e.preventDefault();
 
     try {
-      const response = await axios.post('/api/Login', {
-        usuario: email, 
-        contraseña: password,
+      const response = await api.post<LoginResponse>('/Login', {
+        username: usuario,
+        password: password
       });
 
       const data = response.data;
 
-      // Guarda token y rol
       localStorage.setItem('token', data.token);
-      localStorage.setItem('rol', data.rol);
+      localStorage.setItem('rol', data.rol.toString());
       localStorage.setItem('nombre', data.nombre);
+      localStorage.setItem('idUsuario', data.idUsuario.toString());
 
-      // Redirige según rol
       switch (data.rol) {
-        case 1: // Admin
+        case 1:
           navigate('/Administrador');
           break;
-        case 2: // Médico
+        case 2:
           navigate('/Doctor');
           break;
-        default: // Usuario
-          navigate('/Paciente');
+        default:
+          navigate('/Home');
           break;
       }
     } catch (error) {
@@ -53,30 +58,24 @@ const Login = () => {
           <div className="card shadow-2-strong" style={{ borderRadius: '1rem' }}>
             <div className="card-body p-5 text-center">
               
-              <h1 className="mb-4">Iniciar Sesión</h1>
+              <h1 className="mb-4">Acceso de Pacientes</h1>
 
               <div className="mb-4">
-                <img 
-                  src="/LoginMedicos.jpg"
-                  alt="Logo Médico" 
-                  className="img-fluid"
-                  style={{ width: '250px', height: '150px'}}
-                />
+              <img src={logo} className="img-fluid" style={{ width: '250px', height: '150px' }} />
               </div>
 
-              {/* Formulario con onSubmit */}
               <form onSubmit={handleSubmit}>
                 <div className="form-floating mb-3">
                   <input 
                     type="text" 
                     className="form-control form-control-lg" 
                     id="floatingInput" 
-                    placeholder="name@example.com"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="nombre_usuario"
+                    value={usuario}
+                    onChange={(e) => setUsuario(e.target.value)}
                     required
                   />
-                  <label htmlFor="floatingInput">Usuario Médico</label>
+                  <label htmlFor="floatingInput">Usuario</label>
                 </div>
 
                 <div className="form-floating mb-3">
@@ -104,25 +103,25 @@ const Login = () => {
                     </label>
                   </div>
                   <button 
-                  className="btn btn-primary btn w-20 mb-0"
-                  onClick={handleGoToRegister}
-                  type="submit"
-                >
-                  Crear Cuenta
-                </button>
+                    className="btn btn-primary w-20 mb-0"
+                    onClick={handleGoToRegister}
+                    type="button"
+                  >
+                    Registrarse
+                  </button>
                 </div>
 
                 <button 
                   className="btn btn-primary btn-lg w-100 mb-3"
                   type="submit"
                 >
-                  Ingresar al Sistema
+                  Iniciar Sesión
                 </button>
 
                 <p className="mt-4 text-muted">
                   Sistema de Citas Médicas 
                   <br/>
-                  <small>Proyecto Escolar - Desarrollo de Software</small>
+                  <small>Portal de Pacientes</small>
                 </p>
               </form>
             </div>
@@ -133,5 +132,4 @@ const Login = () => {
   );
 };
 
-export default Login;
-
+export default LoginUsuario;
