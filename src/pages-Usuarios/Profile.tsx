@@ -1,15 +1,49 @@
-
 import React, { useState } from 'react';
+import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
+import Registro from './Registro';
 
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const navigate = useNavigate();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleGoToRegister = () => {
+    navigate('/Registro');
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('Email:', email);
-    console.log('Password:', password);
-    // Aquí puedes hacer la llamada al backend
+
+    try {
+      const response = await axios.post('http://localhost:5140/api/Login', {
+        usuario: email, 
+        contraseña: password,
+      });
+
+      const data = response.data;
+
+      // Guarda token y rol
+      localStorage.setItem('token', data.token);
+      localStorage.setItem('rol', data.rol);
+      localStorage.setItem('nombre', data.nombre);
+
+      // Redirige según rol
+      switch (data.rol) {
+        case 1: // Admin
+          navigate('/Administrador');
+          break;
+        case 2: // Médico
+          navigate('/Doctor');
+          break;
+        default: // Usuario
+          navigate('/Paciente');
+          break;
+      }
+    } catch (error) {
+      console.error('Error al iniciar sesión:', error);
+      alert('Usuario o contraseña incorrectos');
+    }
   };
 
   return (
@@ -34,7 +68,7 @@ const Login = () => {
               <form onSubmit={handleSubmit}>
                 <div className="form-floating mb-3">
                   <input 
-                    type="email" 
+                    type="text" 
                     className="form-control form-control-lg" 
                     id="floatingInput" 
                     placeholder="name@example.com"
@@ -69,13 +103,17 @@ const Login = () => {
                       Recordar cuenta
                     </label>
                   </div>
-                  <a href="#!" className="text-decoration-none">
-                    Crear Cuenta
-                  </a>
+                  <button 
+                  className="btn btn-primary btn w-20 mb-0"
+                  onClick={handleGoToRegister}
+                  type="submit"
+                >
+                  Crear Cuenta
+                </button>
                 </div>
 
                 <button 
-                  className="btn btn-primary btn-lg w-100 mb-3" 
+                  className="btn btn-primary btn-lg w-100 mb-3"
                   type="submit"
                 >
                   Ingresar al Sistema
