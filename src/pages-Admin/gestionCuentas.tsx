@@ -35,7 +35,6 @@ const nombresRoles: { [key: number]: string } = {
   1: 'Administrador',
   2: 'Doctor',
   3: 'Paciente',
-  4: 'Recepcionista'
 };
 
 const GestionUsuarios: React.FC = () => {
@@ -369,7 +368,6 @@ const GestionUsuarios: React.FC = () => {
                     <option value="1">Administrador</option>
                     <option value="2">Doctor</option>
                     <option value="3">Paciente</option>
-                    <option value="4">Recepcionista</option>
                   </select>
                 </div>
               </div>
@@ -609,7 +607,6 @@ const GestionUsuarios: React.FC = () => {
                         <option value={1}>Administrador</option>
                         <option value={2}>Doctor</option>
                         <option value={3}>Paciente</option>
-                        <option value={4}>Recepcionista</option>
                       </select>
                     </div>
                   </div>
@@ -790,7 +787,6 @@ const GestionUsuarios: React.FC = () => {
                         <option value={1}>Administrador</option>
                         <option value={2}>Doctor</option>
                         <option value={3}>Paciente</option>
-                        <option value={4}>Recepcionista</option>
                       </select>
                     </div>
                   </div>
