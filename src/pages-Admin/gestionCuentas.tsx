@@ -17,6 +17,20 @@ interface Usuario {
   rol: number;
 }
 
+interface NuevoUsuario {
+  nombre: string;
+  apellidos: string;
+  edad: number | string;
+  telefono: string;
+  direccion: string;
+  estado: string;
+  ciudad: string;
+  correo: string;
+  usuario: string;
+  contraseña: string;
+  rol: number;
+}
+
 const nombresRoles: { [key: number]: string } = {
   1: 'Administrador',
   2: 'Doctor',
@@ -34,7 +48,6 @@ const GestionUsuarios: React.FC = () => {
   const [filtro, setFiltro] = useState('');
   const [filtroRol, setFiltroRol] = useState<number | null>(null);
 
- 
   const [showModal, setShowModal] = useState(false);
   const [formData, setFormData] = useState<Usuario>({
     idUsuario: 0,
@@ -53,6 +66,22 @@ const GestionUsuarios: React.FC = () => {
 
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [usuarioParaEliminar, setUsuarioParaEliminar] = useState<number | null>(null);
+  
+  const [showRegisterModal, setShowRegisterModal] = useState(false);
+  const [registerFormData, setRegisterFormData] = useState<NuevoUsuario>({
+    nombre: '',
+    apellidos: '',
+    edad: '',
+    telefono: '',
+    direccion: '',
+    estado: '',
+    ciudad: '',
+    correo: '',
+    usuario: '',
+    contraseña: '',
+    rol: 3 
+  });
+  const [registerError, setRegisterError] = useState('');
 
   useEffect(() => {
     const fetchUsuarios = async () => {
@@ -78,7 +107,6 @@ const GestionUsuarios: React.FC = () => {
       usuario.apellidos.toLowerCase().includes(filtro.toLowerCase()) ||
       usuario.correo.toLowerCase().includes(filtro.toLowerCase()) ||
       usuario.usuario.toLowerCase().includes(filtro.toLowerCase());
-
     const cumpleFiltroRol = filtroRol === null || usuario.rol === filtroRol;
     
     return cumpleFiltroTexto && cumpleFiltroRol;
@@ -154,7 +182,15 @@ const GestionUsuarios: React.FC = () => {
     setSuccess('');
     
     try {
+      console.log(`Intentando eliminar usuario con ID: ${usuarioParaEliminar}`);
+      
       const response = await api.delete(`/Cuenta/${usuarioParaEliminar}`);
+      
+      console.log('Respuesta del servidor:', {
+        status: response.status,
+        statusText: response.statusText,
+        data: response.data
+      });
       
       if (response.status === 200) {
         setUsuarios(prevUsuarios => 
@@ -165,10 +201,98 @@ const GestionUsuarios: React.FC = () => {
         setTimeout(() => {
           handleCloseDeleteModal();
         }, 1500);
+      } else {
+        setError(`Respuesta inesperada: ${response.status} ${response.statusText}`);
       }
     } catch (err: any) {
-      console.error('Error al eliminar usuario:', err);
-      setError(err.response?.data?.message || 'Error al eliminar usuario');
+      console.log('Error detallado:', err);
+      
+      if (err.response) {
+        console.log('Detalles de respuesta de error:', {
+          status: err.response.status,
+          statusText: err.response.statusText,
+          data: err.response.data,
+          headers: err.response.headers
+        });
+      }
+      
+      const errorMessage = 
+        err.response?.data?.message || 
+        (typeof err.response?.data === 'string' ? err.response.data : null) ||
+        'Error al eliminar usuario. Posiblemente existan registros asociados a este usuario.';
+        
+      setError(errorMessage);
+    }
+  };
+
+  const handleOpenRegisterModal = () => {
+    setRegisterFormData({
+      nombre: '',
+      apellidos: '',
+      edad: '',
+      telefono: '',
+      direccion: '',
+      estado: '',
+      ciudad: '',
+      correo: '',
+      usuario: '',
+      contraseña: '',
+      rol: 3 
+    });
+    setRegisterError('');
+    setSuccess('');
+    setShowRegisterModal(true);
+  };
+  
+  const handleCloseRegisterModal = () => {
+    setShowRegisterModal(false);
+    setRegisterError('');
+    setSuccess('');
+  };
+  
+  const handleRegisterInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    const { name, value } = e.target;
+    setRegisterFormData(prevState => ({
+      ...prevState,
+      [name]: name === 'edad' || name === 'rol' ? (value === '' ? '' : parseInt(value, 10)) : value
+    }));
+  };
+  
+  const handleRegisterSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setRegisterError('');
+    setSuccess('');
+    
+    if (!registerFormData.nombre.trim() || !registerFormData.apellidos.trim() || 
+        !registerFormData.correo.trim() || !registerFormData.usuario.trim() || 
+        !registerFormData.contraseña.trim()) {
+      setRegisterError('Los campos marcados con * son obligatorios');
+      return;
+    }
+    
+    try {
+      const dataToSend = {
+        ...registerFormData,
+        edad: typeof registerFormData.edad === 'string' ? 
+              (registerFormData.edad === '' ? 0 : parseInt(registerFormData.edad, 10)) : 
+              registerFormData.edad
+      };
+      
+      const response = await api.post('/Cuenta', dataToSend);
+      
+      if (response.status === 201) {
+        const updatedUsers = await api.get('/Cuenta');
+        setUsuarios(updatedUsers.data);
+        
+        setSuccess('Usuario registrado exitosamente');
+        setTimeout(() => {
+          setShowRegisterModal(false);
+          setSuccess('');
+        }, 1500);
+      }
+    } catch (err: any) {
+      console.error('Error al registrar usuario:', err);
+      setRegisterError(err.response?.data?.message || 'Error al registrar usuario');
     }
   };
 
@@ -196,7 +320,7 @@ const GestionUsuarios: React.FC = () => {
                 <button 
                   type="button" 
                   className="btn btn-success me-2"
-                  onClick={() => navigate('/Registro')}
+                  onClick={handleOpenRegisterModal}
                 >
                   Nuevo Usuario
                 </button>
@@ -210,8 +334,10 @@ const GestionUsuarios: React.FC = () => {
               </div>
             </div>
             <div className="card-body">
-              {error && !showModal && !showDeleteModal && <div className="alert alert-danger">{error}</div>}
-              {success && !showModal && !showDeleteModal && <div className="alert alert-success">{success}</div>}
+              {error && !showModal && !showDeleteModal && !showRegisterModal && 
+                <div className="alert alert-danger">{error}</div>}
+              {success && !showModal && !showDeleteModal && !showRegisterModal && 
+                <div className="alert alert-success">{success}</div>}
               
               {/* Filtros */}
               <div className="row mb-4">
@@ -243,6 +369,7 @@ const GestionUsuarios: React.FC = () => {
                     <option value="1">Administrador</option>
                     <option value="2">Doctor</option>
                     <option value="3">Paciente</option>
+                    <option value="4">Recepcionista</option>
                   </select>
                 </div>
               </div>
@@ -338,6 +465,181 @@ const GestionUsuarios: React.FC = () => {
           </div>
         </div>
       </div>
+
+      {/* Modal de Registro de Nuevo Usuario */}
+      {showRegisterModal && (
+        <div className="modal fade show" style={{ display: 'block', backgroundColor: 'rgba(0,0,0,0.5)' }}>
+          <div className="modal-dialog modal-lg">
+            <div className="modal-content">
+              <div className="modal-header bg-success text-white">
+                <h5 className="modal-title">Registrar Nuevo Usuario</h5>
+                <button type="button" className="btn-close btn-close-white" onClick={handleCloseRegisterModal}></button>
+              </div>
+              <div className="modal-body">
+                {registerError && <div className="alert alert-danger">{registerError}</div>}
+                {success && <div className="alert alert-success">{success}</div>}
+
+                <form onSubmit={handleRegisterSubmit}>
+                  <div className="row">
+                    <div className="col-md-6 mb-3">
+                      <label htmlFor="register-nombre" className="form-label">Nombre *</label>
+                      <input 
+                        type="text" 
+                        className="form-control" 
+                        id="register-nombre" 
+                        name="nombre"
+                        value={registerFormData.nombre}
+                        onChange={handleRegisterInputChange}
+                        required
+                      />
+                    </div>
+                    <div className="col-md-6 mb-3">
+                      <label htmlFor="register-apellidos" className="form-label">Apellidos *</label>
+                      <input 
+                        type="text" 
+                        className="form-control" 
+                        id="register-apellidos" 
+                        name="apellidos"
+                        value={registerFormData.apellidos}
+                        onChange={handleRegisterInputChange}
+                        required
+                      />
+                    </div>
+                  </div>
+
+                  <div className="row">
+                    <div className="col-md-6 mb-3">
+                      <label htmlFor="register-correo" className="form-label">Correo Electrónico *</label>
+                      <input 
+                        type="email" 
+                        className="form-control" 
+                        id="register-correo" 
+                        name="correo"
+                        value={registerFormData.correo}
+                        onChange={handleRegisterInputChange}
+                        required
+                      />
+                    </div>
+                    <div className="col-md-6 mb-3">
+                      <label htmlFor="register-telefono" className="form-label">Teléfono</label>
+                      <input 
+                        type="tel" 
+                        className="form-control" 
+                        id="register-telefono" 
+                        name="telefono"
+                        value={registerFormData.telefono}
+                        onChange={handleRegisterInputChange}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="row">
+                    <div className="col-md-12 mb-3">
+                      <label htmlFor="register-direccion" className="form-label">Dirección</label>
+                      <input 
+                        type="text" 
+                        className="form-control" 
+                        id="register-direccion" 
+                        name="direccion"
+                        value={registerFormData.direccion}
+                        onChange={handleRegisterInputChange}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="row">
+                    <div className="col-md-6 mb-3">
+                      <label htmlFor="register-ciudad" className="form-label">Ciudad</label>
+                      <input 
+                        type="text" 
+                        className="form-control" 
+                        id="register-ciudad" 
+                        name="ciudad"
+                        value={registerFormData.ciudad}
+                        onChange={handleRegisterInputChange}
+                      />
+                    </div>
+                    <div className="col-md-6 mb-3">
+                      <label htmlFor="register-estado" className="form-label">Estado</label>
+                      <input 
+                        type="text" 
+                        className="form-control" 
+                        id="register-estado" 
+                        name="estado"
+                        value={registerFormData.estado}
+                        onChange={handleRegisterInputChange}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="row">
+                    <div className="col-md-4 mb-3">
+                      <label htmlFor="register-edad" className="form-label">Edad</label>
+                      <input 
+                        type="number" 
+                        className="form-control" 
+                        id="register-edad" 
+                        name="edad"
+                        min="1"
+                        value={registerFormData.edad}
+                        onChange={handleRegisterInputChange}
+                      />
+                    </div>
+                    <div className="col-md-4 mb-3">
+                      <label htmlFor="register-usuario" className="form-label">Nombre de Usuario *</label>
+                      <input 
+                        type="text" 
+                        className="form-control" 
+                        id="register-usuario" 
+                        name="usuario"
+                        value={registerFormData.usuario}
+                        onChange={handleRegisterInputChange}
+                        required
+                      />
+                    </div>
+                    <div className="col-md-4 mb-3">
+                      <label htmlFor="register-rol" className="form-label">Rol</label>
+                      <select 
+                        className="form-select" 
+                        id="register-rol" 
+                        name="rol"
+                        value={registerFormData.rol}
+                        onChange={handleRegisterInputChange}
+                      >
+                        <option value={1}>Administrador</option>
+                        <option value={2}>Doctor</option>
+                        <option value={3}>Paciente</option>
+                        <option value={4}>Recepcionista</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <div className="mb-3">
+                    <label htmlFor="register-contraseña" className="form-label">Contraseña *</label>
+                    <input 
+                      type="password" 
+                      className="form-control" 
+                      id="register-contraseña" 
+                      name="contraseña"
+                      value={registerFormData.contraseña}
+                      onChange={handleRegisterInputChange}
+                      required
+                    />
+                    <small className="text-muted">La contraseña debe tener al menos 6 caracteres.</small>
+                  </div>
+                  
+                  <p className="text-muted mb-3">Los campos marcados con * son obligatorios.</p>
+
+                  <div className="d-flex justify-content-end">
+                    <button type="button" className="btn btn-secondary me-2" onClick={handleCloseRegisterModal}>Cancelar</button>
+                    <button type="submit" className="btn btn-success">Registrar Usuario</button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Modal de Edición */}
       {showModal && usuarioSeleccionado && (
@@ -485,10 +787,10 @@ const GestionUsuarios: React.FC = () => {
                         onChange={handleInputChange}
                         required
                       >
-                        <option value="1">Administrador</option>
-                        <option value="2">Doctor</option>
-                        <option value="3">Paciente</option>
-                        <option value="4">Recepcionista</option>
+                        <option value={1}>Administrador</option>
+                        <option value={2}>Doctor</option>
+                        <option value={3}>Paciente</option>
+                        <option value={4}>Recepcionista</option>
                       </select>
                     </div>
                   </div>
@@ -533,8 +835,7 @@ const GestionUsuarios: React.FC = () => {
 
                 <p>¿Está seguro que desea eliminar este usuario? Esta acción no se puede deshacer.</p>
                 <p className="mb-0"><strong>Usuario ID:</strong> {usuarioParaEliminar}</p>
-                <p><strong>Nombre:</strong> {usuarios.find(u => u.idUsuario === usuarioParaEliminar)?.nombre || 
-                  `${usuarios.find(u => u.idUsuario === usuarioParaEliminar)?.nombre} ${usuarios.find(u => u.idUsuario === usuarioParaEliminar)?.apellidos}`}</p>
+                <p><strong>Nombre:</strong> {usuarios.find(u => u.idUsuario === usuarioParaEliminar)?.nombre || ''} {usuarios.find(u => u.idUsuario === usuarioParaEliminar)?.apellidos || ''}</p>
               </div>
               <div className="modal-footer">
                 <button type="button" className="btn btn-secondary" onClick={handleCloseDeleteModal}>Cancelar</button>
@@ -551,9 +852,9 @@ const GestionUsuarios: React.FC = () => {
 const getRolBadgeColor = (rol: number): string => {
   switch (rol) {
     case 1: return 'danger'; 
-    case 2: return 'primary';
+    case 2: return 'primary'; 
     case 3: return 'success'; 
-    case 4: return 'info';
+    case 4: return 'info'; 
     default: return 'secondary';
   }
 };
