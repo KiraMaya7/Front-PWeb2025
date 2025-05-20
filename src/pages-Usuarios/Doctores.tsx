@@ -23,9 +23,9 @@ const Doctores = () => {
   const [selectedDoctor, setSelectedDoctor] = useState<Doctor | null>(null);
   const [formData, setFormData] = useState<CitaData>({
     idDoctor: 0,
-    idUsuario: Number(localStorage.getItem('idUsuario')) || 0,
+    idUsuario: Number(localStorage.getItem('idUsuario')),
     fechaHora: '',
-    estadoCita: 0,
+    estadoCita: 1,
     notas: ''
   });
   const [doctores, setDoctores] = useState<Doctor[]>([]);
