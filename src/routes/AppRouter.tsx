@@ -18,6 +18,8 @@ import CalificacionesDoctores from '../pages-Admin/calificacionDoctores';
 import GestionUsuarios from '../pages-Admin/gestionCuentas';
 import CalificacionesPacientes from '../pages-Usuarios/CalificaDoctores';
 
+import HistorialMedicoPage from '../pages-Doctores/HistorialMedico';
+
 
 export default function AppRouter() {
   return (
@@ -36,6 +38,11 @@ export default function AppRouter() {
         <PrivateRoute allowedRoles={[2]}>
           <CitasPacientes />
         </PrivateRoute>
+      } />
+      <Route path="/HistorialMedico/Paciente/:id" element={
+        <PrivateRoute allowedRoles={[2]}>
+      <HistorialMedicoPage />
+      </PrivateRoute>
       } />
       
       {/* Ruta  para administradores (rol 1) */}
@@ -65,7 +72,7 @@ export default function AppRouter() {
           </PrivateRoute>
         } />
 
-      {/* Ruta  para administradores (rol 3) */}
+      {/* Ruta  para pacientes (rol 3) */}
       <Route path="/Paciente" element={
         <PrivateRoute allowedRoles={[3]}>
           < PacienteDashboard/>
