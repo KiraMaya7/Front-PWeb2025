@@ -4,7 +4,6 @@ import api from '../services/api';
 
 const Registro = () => {
   const [form, setForm] = useState({
-    contraseña: '',
     nombre: '',
     apellidos: '',
     edad: "",
@@ -14,6 +13,7 @@ const Registro = () => {
     ciudad: '',
     correo: '',
     usuario: '',
+    contraseña: '',
     rol: 3 
   });
 
@@ -59,8 +59,6 @@ const Registro = () => {
                   onChange={handleChange}
                   required
                 >
-                  <option value={1}>Administrador</option>
-                  <option value={2}>Doctor</option>
                   <option value={3}>Paciente</option>
                 </select>
               </div>
