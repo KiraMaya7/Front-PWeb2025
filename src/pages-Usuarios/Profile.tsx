@@ -100,17 +100,9 @@ const handleSubmit = async (e: React.FormEvent) => {
 
                 <div className="d-flex justify-content-between mb-4">
                   <div className="form-check">
-                    <input 
-                      className="form-check-input" 
-                      type="checkbox" 
-                      id="rememberMe" 
-                    />
-                    <label className="form-check-label" htmlFor="rememberMe">
-                      Recordar cuenta
-                    </label>
                   </div>
                   <button 
-                    className="btn btn-primary w-20 mb-0"
+                    className="btn btn-primary text-center"
                     onClick={handleGoToRegister}
                     type="button"
                   >

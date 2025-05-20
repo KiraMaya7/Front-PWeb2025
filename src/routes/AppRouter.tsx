@@ -17,7 +17,9 @@ import ReportesCitas from '../pages-Admin/reportesCitas';
 import CalificacionesDoctores from '../pages-Admin/calificacionDoctores';
 import GestionUsuarios from '../pages-Admin/gestionCuentas';
 import CalificacionesPacientes from '../pages-Usuarios/CalificaDoctores';
+
 import HistorialMedicoPage from '../pages-Doctores/HistorialMedico';
+
 
 export default function AppRouter() {
   return (
