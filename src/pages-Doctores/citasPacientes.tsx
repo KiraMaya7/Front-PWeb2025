@@ -33,30 +33,40 @@ const CitasPacientes: React.FC = () => {
   const [selectedPaciente, setSelectedPaciente] = useState<Usuario | null>(null);
   const [loadingPaciente, setLoadingPaciente] = useState(false);
   const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
+  const [updatingCita, setUpdatingCita] = useState<number | null>(null);
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const fetchCitas = async () => {
-      try {
-        setLoading(true);
-        const idUsuario = localStorage.getItem('idUsuario');
-        
-        const doctorResponse = await api.get(`/Doctores/Usuario/${idUsuario}`);
-        const idDoctor = doctorResponse.data.idDoctor;
-        localStorage.setItem('idDoctor', idDoctor.toString());
-        
-        const citasResponse = await api.get(`/Citas/Doctor/${idDoctor}`);
-        setCitas(citasResponse.data);
-      } catch (error) {
-        console.error('Error al cargar citas:', error);
-        setError('No se pudieron cargar las citas. Por favor, intente de nuevo más tarde.');
-      } finally {
-        setLoading(false);
-      }
-    };
+  const estadosCita = [
+    { id: 1, nombre: 'Programada' },
+    { id: 2, nombre: 'Confirmada' },
+    { id: 3, nombre: 'Cancelada' },
+    { id: 4, nombre: 'Completada' },
+    { id: 5, nombre: 'Reprogramada' }
+  ];
 
+  useEffect(() => {
     fetchCitas();
   }, []);
+
+  const fetchCitas = async () => {
+    try {
+      setLoading(true);
+      const idUsuario = localStorage.getItem('idUsuario');
+      
+      const doctorResponse = await api.get(`/Doctores/Usuario/${idUsuario}`);
+      const idDoctor = doctorResponse.data.idDoctor;
+      localStorage.setItem('idDoctor', idDoctor.toString());
+      
+      const citasResponse = await api.get(`/Citas/Doctor/${idDoctor}`);
+      setCitas(citasResponse.data);
+    } catch (error) {
+      console.error('Error al cargar citas:', error);
+      setError('No se pudieron cargar las citas. Por favor, intente de nuevo más tarde.');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleVerPerfil = async (idUsuario: number) => {
     try {
@@ -93,6 +103,53 @@ const CitasPacientes: React.FC = () => {
   const handleVerHistorial = (idUsuario: number) => {
     navigate(`/HistorialMedico/Paciente/${idUsuario}`);
   };
+
+  const handleEstadoChange = async (idCita: number, nuevoEstado: number) => {
+    try {
+      setUpdatingCita(idCita);
+      setError('');
+      setSuccess('');
+
+      const citaActual = citas.find(c => c.idCita === idCita);
+      if (!citaActual) {
+        throw new Error('Cita no encontrada');
+      }
+
+      const updateData = {
+        idCita: citaActual.idCita,
+        idDoctor: Number(localStorage.getItem('idDoctor')),
+        idUsuario: citaActual.idUsuario,
+        fechaHora: citaActual.fechaHora,
+        estadoCita: nuevoEstado,
+        notas: citaActual.notas
+      };
+      
+      await api.put(`/Citas/${idCita}`, updateData);
+
+      setCitas(prev => prev.map(cita => {
+        if (cita.idCita === idCita) {
+          return { 
+            ...cita, 
+            estadoCita: nuevoEstado,
+            estadoNombre: estadosCita.find(e => e.id === nuevoEstado)?.nombre || 'Desconocido'
+          };
+        }
+        return cita;
+      }));
+      
+      setSuccess(`Estado de la cita actualizado a "${estadosCita.find(e => e.id === nuevoEstado)?.nombre}"`);
+      setTimeout(() => {
+        setSuccess('');
+      }, 3000);
+      
+    } catch (error) {
+      console.error('Error al actualizar estado de la cita:', error);
+      setError('No se pudo actualizar el estado de la cita. Por favor, intente de nuevo.');
+    } finally {
+      setUpdatingCita(null);
+    }
+  };
+
   const getBadgeColor = (estadoCita: number) => {
     switch (estadoCita) {
       case 0: return 'bg-warning text-dark'; 
@@ -111,6 +168,13 @@ const CitasPacientes: React.FC = () => {
         <div className="alert alert-danger alert-dismissible fade show" role="alert">
           {error}
           <button type="button" className="btn-close" onClick={() => setError('')}></button>
+        </div>
+      )}
+      
+      {success && (
+        <div className="alert alert-success alert-dismissible fade show" role="alert">
+          {success}
+          <button type="button" className="btn-close" onClick={() => setSuccess('')}></button>
         </div>
       )}
       
@@ -145,9 +209,29 @@ const CitasPacientes: React.FC = () => {
                       <td>{cita.idUsuario}</td>
                       <td>{new Date(cita.fechaHora).toLocaleString()}</td>
                       <td>
-                        <span className={`badge ${getBadgeColor(cita.estadoCita)}`}>
-                          {cita.estadoNombre}
-                        </span>
+                        <div className="d-flex align-items-center">
+                          <span className={`badge me-2 ${getBadgeColor(cita.estadoCita)}`}>
+                            {cita.estadoNombre}
+                          </span>
+                          <select 
+                            className="form-select form-select-sm" 
+                            style={{ width: 'auto', minWidth: '120px' }}
+                            value={cita.estadoCita}
+                            onChange={(e) => handleEstadoChange(cita.idCita, parseInt(e.target.value))}
+                            disabled={updatingCita === cita.idCita}
+                          >
+                            {estadosCita.map(estado => (
+                              <option key={estado.id} value={estado.id}>
+                                {estado.nombre}
+                              </option>
+                            ))}
+                          </select>
+                          {updatingCita === cita.idCita && (
+                            <div className="spinner-border spinner-border-sm ms-2" role="status">
+                              <span className="visually-hidden">Actualizando...</span>
+                            </div>
+                          )}
+                        </div>
                       </td>
                       <td>
                         <div className="btn-group" role="group">

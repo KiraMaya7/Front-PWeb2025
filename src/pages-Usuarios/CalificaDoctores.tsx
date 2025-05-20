@@ -40,11 +40,7 @@ const CalificacionesPacientes = () => {
           return;
         }
 
-        const response = await api.get(`/Citas/Paciente/${idUsuario}`, {
-          headers: {
-            Authorization: `Bearer ${token}`
-          }
-        });
+        const response = await api.get(`/Citas/Paciente/${idUsuario}`);
 
         const citasMapeadas = response.data.map((cita: any) => ({
           idCita: cita.idCita,
@@ -62,7 +58,7 @@ const CalificacionesPacientes = () => {
 
         // Filtrar solo citas completadas para el 4 noams
         const citasFiltradas = citasMapeadas.filter((cita: Cita) => 
-          cita.idEstado === 4
+          cita.idEstado == 4
         );
 
         setCitas(citasFiltradas);
