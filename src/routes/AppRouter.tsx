@@ -16,6 +16,7 @@ import InicioPaciente from '../pages-Usuarios/PacienteCitas'
 import ReportesCitas from '../pages-Admin/reportesCitas';
 import CalificacionesDoctores from '../pages-Admin/calificacionDoctores';
 import GestionUsuarios from '../pages-Admin/gestionCuentas';
+import CalificacionesPacientes from '../pages-Usuarios/CalificaDoctores';
 
 
 export default function AppRouter() {
@@ -73,6 +74,11 @@ export default function AppRouter() {
         <Route path="/Paciente/InicioPaciente" element={
         <PrivateRoute allowedRoles={[3]}>
           <InicioPaciente />
+          </PrivateRoute>
+        } />
+        <Route path="/Paciente/CalificacionesPacientes" element={
+        <PrivateRoute allowedRoles={[3]}>
+          <CalificacionesPacientes />
           </PrivateRoute>
         } />
 

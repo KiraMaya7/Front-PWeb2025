@@ -6,7 +6,7 @@ interface Cita {
   idCita: number;
   idDoctor: number;
   fechaHora: string;
-  estado: string;
+  estadoCita: number;
   medico: string;
   especialidad: string;
 }
@@ -87,7 +87,7 @@ const InicioPaciente: React.FC = () => {
         idDoctor: formData.idDoctor,
         idUsuario: idUsuario,
         fechaHora: new Date(formData.fechaHora).toISOString(),
-        estadoCita: 1,
+        estadoCita: 1, // Estado inicial: Pendiente
         notas: formData.motivo
       };
 
@@ -123,20 +123,40 @@ const InicioPaciente: React.FC = () => {
     }
   };
 
-  const handleDelete = async (idCita: number) => {
-    const confirmDelete = window.confirm('¿Está seguro de que desea cancelar esta cita?');
-    if (!confirmDelete) return;
+  const handleUpdateStatus = async (idCita: number, nuevoEstado: number) => {
+    const confirmar = window.confirm(
+      nuevoEstado === 2 
+        ? '¿Confirmar esta cita?' 
+        : '¿Cancelar esta cita?'
+    );
+    
+    if (!confirmar) return;
 
     try {
-      await api.delete(`/Citas/${idCita}`, {
-        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+      await api.patch(`/Citas/${idCita}/Estado/${nuevoEstado}`, null, {
+        headers: { 
+          Authorization: `Bearer ${localStorage.getItem('token')}`,
+          'Content-Type': 'application/json'
+        }
       });
 
-      setCitas(citas.filter(c => c.idCita !== idCita));
-      setSuccess('Cita cancelada correctamente');
+      // Actualización del estado, quitando las canceladas
+      const nuevasCitas = citas
+        .map(c => 
+          c.idCita === idCita ? { ...c, estadoCita: nuevoEstado } : c
+        )
+        .filter(c => c.estadoCita !== 3); // Ocultar canceladas
+
+      setCitas(nuevasCitas);
+      
+      setSuccess(
+        nuevoEstado === 2 
+          ? 'Cita confirmada correctamente' 
+          : 'Cita cancelada correctamente'
+      );
     } catch (err: any) {
-      console.error('Error al cancelar cita:', err);
-      setError(err.response?.data?.message || 'Error al cancelar cita');
+      console.error('Error:', err);
+      setError(err.response?.data?.message || 'Error al actualizar cita');
     }
   };
 
@@ -149,11 +169,13 @@ const InicioPaciente: React.FC = () => {
       <div className="row">
         <div className="col-md-8">
           <h3 className="mb-4">Mis Citas Programadas</h3>
-          {citas.length === 0 ? (
+          {citas.filter(c => c.estadoCita !== 3).length === 0 ? (
             <div className="alert alert-info">No tienes citas programadas</div>
           ) : (
             <div className="list-group">
-              {citas.map(cita => (
+              {citas
+                .filter(c => c.estadoCita !== 3)
+                .map(cita => (
                 <div key={cita.idCita} className="list-group-item">
                   <div className="d-flex justify-content-between align-items-start">
                     <div>
@@ -171,16 +193,30 @@ const InicioPaciente: React.FC = () => {
                       <p className="text-muted small mb-1">{cita.especialidad}</p>
                     </div>
                     <div className="text-end">
-                      <span className={`badge mb-2 ${cita.estado === 'Pendiente' ? 'bg-warning' : 'bg-success'}`}>
-                        {cita.estado}
+                      <span className={`badge mb-2 ${
+                        cita.estadoCita === 2 ? 'bg-success' : 
+                        cita.estadoCita === 1 ? 'bg-warning' : 'bg-danger'
+                      }`}>
+                        {cita.estadoCita === 2 ? 'Confirmada' : 
+                         cita.estadoCita === 1 ? 'Pendiente' : 'Cancelada'}
                       </span>
                       <br />
-                      <button
-                        className="btn btn-sm btn-danger"
-                        onClick={() => handleDelete(cita.idCita)}
-                      >
-                        Cancelar
-                      </button>
+                      {cita.estadoCita === 1 && (
+                        <>
+                          <button
+                            className="btn btn-sm btn-success me-2"
+                            onClick={() => handleUpdateStatus(cita.idCita, 2)}
+                          >
+                            Confirmar
+                          </button>
+                          <button
+                            className="btn btn-sm btn-danger"
+                            onClick={() => handleUpdateStatus(cita.idCita, 3)} 
+                          >
+                            Cancelar
+                          </button>
+                        </>
+                      )}
                     </div>
                   </div>
                 </div>
