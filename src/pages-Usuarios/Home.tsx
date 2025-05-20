@@ -2,7 +2,7 @@
 //import  '../estilos/carrusel.css';
 //import styles from '../estilos/carrusel.module.css';
 
-
+import { Link } from 'react-router-dom';
 
 
 
@@ -93,10 +93,9 @@ const Home = () => {
               <li>✔ Citas online</li>
               <li>✔ Seguimiento personalizado</li>
             </ul>
-            <button className="btn btn-primary btn-lg mt-3"
-            >
-              Agendar cita ahora
-            </button>
+            <Link to="/Profile" className="btn btn-primary btn-lg mt-3">
+              Registrarse
+            </Link>
           </div>
           <div className="col-md-6">
             <img 
@@ -108,8 +107,6 @@ const Home = () => {
           </div>
         </div>
       </section>
-
-      {/* Pie de página */}
       <footer className="hero-section py-3" style={{ backgroundColor: '#cceeff' }}>
         <div className="container text-center">
           <p>Contacto: (555) 123-4567 | contacto@hospitalsanjose.com</p>
