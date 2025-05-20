@@ -125,7 +125,7 @@ const CalificacionesPacientes = () => {
   return (
     <div className="container mt-4">
       <h2 className="mb-4">Citas Completadas</h2>
-      <button onClick={() => navigate(-1)} className="btn btn-secondary mb-3">
+      <button onClick={() => navigate(-1)} className="btn btn-danger mb-3">
         Volver
       </button>
 

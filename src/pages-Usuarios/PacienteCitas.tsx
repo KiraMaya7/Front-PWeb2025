@@ -288,7 +288,7 @@ const InicioPaciente: React.FC = () => {
                   </button>
                   <button 
                     type="button" 
-                    className="btn btn-outline-secondary"
+                    className="btn btn-danger"
                     onClick={() => navigate('/paciente')}
                   >
                     Volver al Inicio
